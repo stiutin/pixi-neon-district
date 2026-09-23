@@ -1,0 +1,53 @@
+{
+  "name": "pixi-neon-district",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Top-down 2D city exploration game built with PixiJS 8, TypeScript and Vite.",
+  "keywords": [
+    "pixijs",
+    "typescript",
+    "vite",
+    "game",
+    "webgl",
+    "2d"
+  ],
+  "homepage": "https://stiutin.github.io/pixi-neon-district/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stiutin/pixi-neon-district.git"
+  },
+  "license": "MIT",
+  "author": "stiutin",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm run test"
+  },
+  "dependencies": {
+    "pixi.js": "^8.21.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@types/node": "^22.20.4",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.12.0",
+    "prettier": "^3.9.9",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.70.1",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.1"
+  }
+}

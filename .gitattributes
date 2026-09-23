@@ -1,0 +1,3 @@
+# Normalise line endings in the repository to LF (the original sources mixed CRLF and LF).
+* text=auto eol=lf
+*.png binary
