@@ -1,6 +1,7 @@
-import type { Container } from "pixi.js";
-import type { Updatable } from "./GameLoop";
-import type { Scene } from "./Scene";
+import type {Container} from 'pixi.js';
+
+import type {Updatable} from './GameLoop';
+import type {Scene} from './Scene';
 
 export class SceneManager implements Updatable {
   private currentScene: Scene | null = null;

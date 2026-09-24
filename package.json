@@ -1,51 +1,63 @@
 {
   "name": "pixi-neon-district",
   "version": "1.0.0",
-  "private": true,
   "description": "Top-down 2D city exploration game built with PixiJS 8, TypeScript and Vite.",
+  "license": "MIT",
+  "author": "Serge Tiutin",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stiutin/pixi-neon-district.git"
+  },
+  "homepage": "https://stiutin.github.io/pixi-neon-district/",
   "keywords": [
     "pixijs",
     "typescript",
     "vite",
     "game",
     "webgl",
-    "2d"
+    "2d",
+    "portfolio"
   ],
-  "homepage": "https://stiutin.github.io/pixi-neon-district/",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/stiutin/pixi-neon-district.git"
-  },
-  "license": "MIT",
-  "author": "stiutin",
+  "private": true,
   "type": "module",
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=22.22.3"
   },
   "scripts": {
-    "dev": "vite",
+    "start": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview",
-    "typecheck": "tsc -b",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier . --write",
-    "format:check": "prettier . --check",
+    "serve": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run format:check && npm run lint && npm run typecheck && npm run test"
+    "e2e": "npm run build && playwright test",
+    "e2e:run": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:install": "playwright install chromium",
+    "screenshots": "node scripts/screenshots.mjs",
+    "lint": "eslint . && stylelint \"src/**/*.css\"",
+    "lint:fix": "eslint . --fix && stylelint \"src/**/*.css\" --fix",
+    "typecheck": "tsc -b",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm test"
   },
   "dependencies": {
     "pixi.js": "^8.21.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.5",
-    "@types/node": "^22.20.4",
-    "eslint": "^9.39.5",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^24.13.6",
+    "eslint": "^10.11.0",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-simple-import-sort": "^14.0.0",
+    "eslint-plugin-unused-imports": "^4.4.1",
     "globals": "^17.12.0",
     "prettier": "^3.9.9",
-    "typescript": "~5.9.3",
+    "stylelint": "^17.15.0",
+    "stylelint-config-standard": "^40.0.0",
+    "stylelint-order": "^8.1.1",
+    "typescript": "~6.0.3",
     "typescript-eslint": "^8.70.1",
     "vite": "^8.3.0",
     "vitest": "^5.0.1"

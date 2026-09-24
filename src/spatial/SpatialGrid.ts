@@ -1,6 +1,6 @@
-import type { AABB } from "../math/AABB";
-import { swapRemove } from "../utils/array";
-import type { SpatialObject } from "./SpatialObject";
+import type {AABB} from '../math/AABB';
+import {swapRemove} from '../utils/array';
+import type {SpatialObject} from './SpatialObject';
 
 function toCellKey(cellX: number, cellY: number): number {
   return ((cellX & 0xffff) << 16) | (cellY & 0xffff);
@@ -12,7 +12,7 @@ export class SpatialGrid<T extends SpatialObject> {
   private readonly visited = new Set<T>();
 
   constructor(private readonly cellSize: number) {
-    if (cellSize <= 0) throw new RangeError("cellSize must be positive");
+    if (cellSize <= 0) throw new RangeError('cellSize must be positive');
   }
 
   public get size(): number {

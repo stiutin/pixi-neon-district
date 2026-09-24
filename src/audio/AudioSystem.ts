@@ -23,25 +23,25 @@ export class AudioSystem {
 
   public playCollect(): void {
     this.play([
-      { frequency: 620, duration: 0.08, type: "sine" },
-      { frequency: 880, duration: 0.09, type: "sine", delay: 0.045 },
+      {frequency: 620, duration: 0.08, type: 'sine'},
+      {frequency: 880, duration: 0.09, type: 'sine', delay: 0.045},
     ]);
   }
 
   public playComplete(): void {
     this.play([
-      { frequency: 523, duration: 0.12, type: "triangle" },
-      { frequency: 659, duration: 0.12, type: "triangle", delay: 0.1 },
-      { frequency: 784, duration: 0.22, type: "triangle", delay: 0.2 },
+      {frequency: 523, duration: 0.12, type: 'triangle'},
+      {frequency: 659, duration: 0.12, type: 'triangle', delay: 0.1},
+      {frequency: 784, duration: 0.22, type: 'triangle', delay: 0.2},
     ]);
   }
 
   public playTalk(): void {
-    this.play([{ frequency: 300, duration: 0.08, type: "triangle" }]);
+    this.play([{frequency: 300, duration: 0.08, type: 'triangle'}]);
   }
 
   public playConfirm(): void {
-    this.play([{ frequency: 520, duration: 0.06, type: "square" }]);
+    this.play([{frequency: 520, duration: 0.06, type: 'square'}]);
   }
 
   public destroy(): void {
@@ -72,7 +72,7 @@ export class AudioSystem {
       this.context = new AudioContextClass();
     }
 
-    if (this.context.state === "suspended") void this.context.resume();
+    if (this.context.state === 'suspended') void this.context.resume();
 
     return this.context;
   }

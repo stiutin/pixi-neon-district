@@ -1,6 +1,7 @@
-import type { Container } from "pixi.js";
-import type { Point } from "../math/Point";
-import { clamp } from "../math/clamp";
+import type {Container} from 'pixi.js';
+
+import {clamp} from '../math/clamp';
+import type {Point} from '../math/Point';
 
 export interface Size {
   readonly width: number;
@@ -15,7 +16,7 @@ export class Camera {
     private readonly world: Container,
     private readonly viewport: Size,
     private readonly bounds: Size,
-    private readonly smoothing: number,
+    private readonly smoothing: number
   ) {}
 
   public snapTo(target: Point): void {
@@ -35,10 +36,7 @@ export class Camera {
   private getClampedOffset(target: Point): [number, number] {
     const minX = Math.min(0, this.viewport.width - this.bounds.width);
     const minY = Math.min(0, this.viewport.height - this.bounds.height);
-    return [
-      clamp(this.viewport.width / 2 - target.x, minX, 0),
-      clamp(this.viewport.height / 2 - target.y, minY, 0),
-    ];
+    return [clamp(this.viewport.width / 2 - target.x, minX, 0), clamp(this.viewport.height / 2 - target.y, minY, 0)];
   }
 
   private apply(): void {

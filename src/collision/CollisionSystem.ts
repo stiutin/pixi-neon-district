@@ -1,6 +1,6 @@
-import { type AABB, intersects } from "../math/AABB";
-import type { SpatialGrid } from "../spatial/SpatialGrid";
-import type { Collider } from "./Collider";
+import {type AABB, intersects} from '../math/AABB';
+import type {SpatialGrid} from '../spatial/SpatialGrid';
+import type {Collider} from './Collider';
 
 export class CollisionSystem {
   private readonly candidates: Collider[] = [];

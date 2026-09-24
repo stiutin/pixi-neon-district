@@ -1,14 +1,14 @@
-import type { Point } from "../math/Point";
-import type { SpatialObject } from "../spatial/SpatialObject";
+import type {Point} from '../math/Point';
+import type {SpatialObject} from '../spatial/SpatialObject';
 
 export type InteractionResult =
   | {
-      readonly kind: "collected";
+      readonly kind: 'collected';
       readonly id: string;
       readonly position: Point;
     }
   | {
-      readonly kind: "dialogue";
+      readonly kind: 'dialogue';
       readonly speaker: string;
       readonly text: string;
     };

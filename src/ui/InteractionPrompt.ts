@@ -1,5 +1,6 @@
-import { Container, Graphics, Text } from "pixi.js";
-import { THEME } from "./theme";
+import {Container, Graphics, Text} from 'pixi.js';
+
+import {THEME} from './theme';
 
 const PADDING_X = 14;
 const HEIGHT = 44;
@@ -7,15 +8,15 @@ const HEIGHT = 44;
 export class InteractionPrompt extends Container {
   private readonly panel = new Graphics();
   private readonly labelText = new Text({
-    text: "",
+    text: '',
     style: {
       fill: THEME.colors.text,
       fontFamily: THEME.font,
       fontSize: 16,
-      fontWeight: "600",
+      fontWeight: '600',
     },
   });
-  private currentLabel = "";
+  private currentLabel = '';
 
   constructor() {
     super();
@@ -25,7 +26,7 @@ export class InteractionPrompt extends Container {
     this.visible = false;
   }
 
-  public show(label: string, key = "E"): void {
+  public show(label: string, key = 'E'): void {
     const text = `[ ${key} ]  ${label}`;
     this.visible = true;
 
@@ -36,8 +37,8 @@ export class InteractionPrompt extends Container {
     this.panel
       .clear()
       .roundRect(0, 0, this.labelText.width + PADDING_X * 2, HEIGHT, 12)
-      .fill({ color: THEME.colors.panel, alpha: 0.9 })
-      .stroke({ color: THEME.colors.accent, width: 1.5 });
+      .fill({color: THEME.colors.panel, alpha: 0.9})
+      .stroke({color: THEME.colors.accent, width: 1.5});
   }
 
   public hide(): void {

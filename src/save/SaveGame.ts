@@ -3,9 +3,9 @@ export interface SaveData {
   readonly soundEnabled: boolean;
 }
 
-export type KeyValueStorage = Pick<Storage, "getItem" | "setItem" | "removeItem">;
+export type KeyValueStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 
-export const DEFAULT_SAVE: SaveData = { collectedIds: [], soundEnabled: true };
+export const DEFAULT_SAVE: SaveData = {collectedIds: [], soundEnabled: true};
 
 function getBrowserStorage(): KeyValueStorage | null {
   try {
@@ -18,7 +18,7 @@ function getBrowserStorage(): KeyValueStorage | null {
 export class SaveGame {
   constructor(
     private readonly key: string,
-    private readonly storage: KeyValueStorage | null = getBrowserStorage(),
+    private readonly storage: KeyValueStorage | null = getBrowserStorage()
   ) {}
 
   public load(): SaveData {
@@ -45,18 +45,16 @@ export class SaveGame {
   }
 
   public static parse(value: unknown): SaveData {
-    if (typeof value !== "object" || value === null) return DEFAULT_SAVE;
+    if (typeof value !== 'object' || value === null) return DEFAULT_SAVE;
 
     const candidate = value as Partial<Record<keyof SaveData, unknown>>;
     const collectedIds = Array.isArray(candidate.collectedIds)
-      ? [...new Set(candidate.collectedIds.filter((id): id is string => typeof id === "string"))]
+      ? [...new Set(candidate.collectedIds.filter((id): id is string => typeof id === 'string'))]
       : [];
     const soundEnabled =
-      typeof candidate.soundEnabled === "boolean"
-        ? candidate.soundEnabled
-        : DEFAULT_SAVE.soundEnabled;
+      typeof candidate.soundEnabled === 'boolean' ? candidate.soundEnabled : DEFAULT_SAVE.soundEnabled;
 
-    return { collectedIds, soundEnabled };
+    return {collectedIds, soundEnabled};
   }
 
   private tryStorage<T>(operation: (storage: KeyValueStorage) => T): T | null {
@@ -65,7 +63,7 @@ export class SaveGame {
     try {
       return operation(this.storage);
     } catch (error) {
-      console.warn("[SaveGame] Storage is unavailable:", error);
+      console.warn('[SaveGame] Storage is unavailable:', error);
       return null;
     }
   }

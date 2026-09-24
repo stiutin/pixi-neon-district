@@ -1,4 +1,4 @@
-import type { AABB } from "../math/AABB";
+import type {AABB} from '../math/AABB';
 
 export interface SpatialObject {
   getSpatialBounds(): AABB;

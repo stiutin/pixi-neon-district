@@ -1,6 +1,7 @@
-import type { Container } from "pixi.js";
-import { swapRemove } from "../utils/array";
-import { Particle } from "./Particle";
+import type {Container} from 'pixi.js';
+
+import {swapRemove} from '../utils/array';
+import {Particle} from './Particle';
 
 export class ParticlePool {
   private readonly free: Particle[] = [];
@@ -8,7 +9,7 @@ export class ParticlePool {
 
   constructor(
     private readonly container: Container,
-    initialSize = 32,
+    initialSize = 32
   ) {
     for (let i = 0; i < initialSize; i++) this.free.push(new Particle());
   }

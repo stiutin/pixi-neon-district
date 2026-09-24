@@ -1,8 +1,9 @@
-import { Sprite, type Texture } from "pixi.js";
-import { type AABB, aabbFromCenter } from "../math/AABB";
-import { GAME_CONFIG } from "../config/game.config";
+import {Sprite, type Texture} from 'pixi.js';
 
-const { speed, size, hitboxHalfSize } = GAME_CONFIG.player;
+import {GAME_CONFIG} from '../config/game.config';
+import {type AABB, aabbFromCenter} from '../math/AABB';
+
+const {speed, size, hitboxHalfSize} = GAME_CONFIG.player;
 
 export class Player extends Sprite {
   public readonly speed = speed;

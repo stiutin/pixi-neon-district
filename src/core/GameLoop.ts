@@ -1,4 +1,4 @@
-import type { Ticker } from "pixi.js";
+import type {Ticker} from 'pixi.js';
 
 export interface Updatable {
   update(deltaTime: number): void;
@@ -10,7 +10,7 @@ export class GameLoop {
   constructor(
     private readonly ticker: Ticker,
     private readonly target: Updatable,
-    private readonly maxDeltaTime: number,
+    private readonly maxDeltaTime: number
   ) {}
 
   public start(): void {

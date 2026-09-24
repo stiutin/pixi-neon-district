@@ -1,3 +1,13 @@
-# Normalise line endings in the repository to LF (the original sources mixed CRLF and LF).
+# All files are checked into the repo with LF
 * text=auto eol=lf
+
+# These files are checked out using CRLF locally
+*.bat eol=crlf
+
+# Binary assets
 *.png binary
+*.jpg binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.woff2 binary

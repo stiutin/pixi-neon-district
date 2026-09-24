@@ -1,161 +1,130 @@
 # Neon District
 
-[![CI](https://github.com/stiutin/pixi-neon-district/actions/workflows/ci.yml/badge.svg)](https://github.com/stiutin/pixi-neon-district/actions/workflows/ci.yml)
-![PixiJS](https://img.shields.io/badge/PixiJS-8-e72264)
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6)
-![Vite](https://img.shields.io/badge/Vite-8-646cff)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+A small top-down game about a neon city at night, built with PixiJS 8 and TypeScript.
 
-A small top-down 2D exploration game about a neon city at night, built with **PixiJS 8**, **TypeScript** and **Vite**.
+Walk the streets, talk to the locals and recover five lost data shards. The game itself is deliberately small. What it is meant to show is what sits underneath: a clean update loop, a spatial grid for collision and interaction queries, object pooling, depth sorting, one input layer for keyboard and touch, and rendering that stays sharp on any screen.
 
-The game is intentionally small. The point of the project is the engineering behind it: a clean update loop, spatial queries, object pooling, y-sorted rendering, input abstraction, crisp HiDPI rendering, persistence and tests.
+**[Open the live demo](https://stiutin.github.io/pixi-neon-district/)**
 
-**▶ [Play the live demo](https://stiutin.github.io/pixi-neon-district/)** (works on desktop and mobile)
+<p align="center">
+  <img src=".github/screenshots/desktop.png" width="49%" alt="The city at night: the player next to a local, with an interaction prompt and a dialogue line" />
+  <img src=".github/screenshots/mobile.png" width="49%" alt="The game on a phone in landscape, with on-screen touch controls" />
+</p>
 
-![Neon District gameplay](docs/screenshot.png)
+## Features
 
-## Gameplay
+- Five data shards to find, three locals with rotating dialogue lines, and a completion screen
+- Keyboard controls bound to physical keys, so WASD works on any layout, including Ukrainian
+- On-screen touch controls on phones and tablets, feeding the same input layer as the keyboard
+- Pause, sound toggle, fullscreen, and a progress reset that happens in place
+- Progress and settings saved in `localStorage`, validated on load
+- The game pauses itself when the tab is hidden
+- Sharp rendering on HiDPI and 4K screens, letterboxed into any window
+- Characters walk in front of and behind buildings, trees and each other
+- Particle bursts, a bobbing animation on the shards, and sound effects synthesised with Web Audio
+- Deployed to GitHub Pages from CI after every green push
 
-Five data shards went dark somewhere in the district. Walk the streets, talk to the locals for hints and recover every shard. Your progress and sound preference are saved in the browser, so you can close the tab and continue later.
+## Tech stack
 
-| Action         | Keyboard                        | Touch           |
-| -------------- | ------------------------------- | --------------- |
-| Move           | `W` `A` `S` `D` / arrow keys    | on-screen D-pad |
-| Interact       | `E` / `Space` / `Enter`         | **E** button    |
-| Pause / resume | `Esc` / `P`                     | **II** button   |
-| Sound on / off | `M`                             | **♪** button    |
-| Fullscreen     | `F`                             | —               |
-| Reset progress | `R` (while paused or completed) | —               |
+[PixiJS 8](https://pixijs.com/), TypeScript (strict), [Vite](https://vitejs.dev/), the Web Audio API.
+Tested with [Vitest](https://vitest.dev/) and [Playwright](https://playwright.dev/).
 
-Keys are bound by physical position (`KeyboardEvent.code`), so movement works on any keyboard layout, including Ukrainian and AZERTY. Touch controls appear automatically on coarse-pointer devices.
+## How it works
 
-## Getting started
+### The loop and scenes
 
-Requires **Node.js 22.12+** (see `.nvmrc`).
+A `GameLoop` on Pixi's ticker converts elapsed time to seconds and clamps it, so a long frame after a tab switch cannot push the player through a wall. Scenes (loading, then the game) own everything they create and release it when they are replaced. The game scene is a small state machine: playing, paused, completed.
+
+### Collision and interaction
+
+Buildings, trees and characters are indexed in a uniform `SpatialGrid`. A collision or "what can I talk to" query only visits the cells around the player, not the whole city. Cell keys are packed into a single number and queries reuse their output array, so the per-frame path allocates nothing.
+
+Movement is resolved one axis at a time: when the player is blocked horizontally, they still slide along the wall vertically, instead of sticking to it. Diagonal input is normalised, so moving diagonally is not faster. Interacting returns a typed result (a collected shard or a line of dialogue), which the scene handles with an exhaustive `switch`.
+
+### Rendering
+
+The game is designed at 1280×720. Instead of stretching that canvas with CSS, which blurs it on large screens, the `Viewport` raises the renderer's resolution to fit the window and the device pixel ratio, up to a cap. Game and interface code keep working in design coordinates, and text stays sharp.
+
+The world has three layers: the static ground, the entities sorted by the position of their feet, and the effects on top. Particles come from a pool and share one geometry; size and colour change through scale and tint, so spawning one never rebuilds GPU data. Camera smoothing and particle drag are exponential in elapsed time, so the game feels the same at 30, 60 and 144 frames per second.
+
+### Input
+
+`InputManager` maps keys and touch buttons to actions such as `moveUp`, `interact` and `pause`. Several sources can hold the same action at once. Pressed-this-frame queries serve menus, held state serves movement, and a synchronous callback serves the browser APIs that require a real user gesture, such as fullscreen. Browser shortcuts like `Ctrl+R` are left alone.
+
+## Testing
+
+| Layer      | Tool       | What it covers                                                                                 |
+| ---------- | ---------- | ---------------------------------------------------------------------------------------------- |
+| Unit       | Vitest     | collision maths, the spatial grid, interaction search, save validation, helpers - 28 tests     |
+| End-to-end | Playwright | the production build on desktop and mobile: starts without errors, input, saving - 3 scenarios |
+
+The engine-independent parts are unit-tested directly. The end-to-end suite runs against the exact build that gets deployed, on a desktop and a phone viewport, and fails on any uncaught error or console message.
+
+## Project structure
+
+```
+src/
+├── app/           composition root, Pixi setup, the responsive viewport
+├── core/          game loop, scene base class, scene manager
+├── scenes/        loading scene, game scene (state machine)
+├── world/         world layers, camera, level data
+├── entities/      player, locals, buildings, trees, shards
+├── spatial/       the uniform grid
+├── collision/     collider contract, collision system
+├── interaction/   interactable contract, nearest-target search
+├── input/         action bindings, keyboard and touch input
+├── effects/       pooled particles
+├── audio/         synthesised sound effects
+├── save/          validated, failure-tolerant saving
+├── ui/            HUD, prompt, banner, overlay, touch controls, theme
+└── math/          boxes, points, clamping
+e2e/               Playwright smoke tests
+scripts/           README screenshots
+```
+
+## Running locally
+
+Requires Node 22.22.3 or newer (see `.nvmrc`).
 
 ```bash
-npm install
-npm run dev        # http://localhost:5173
+git clone https://github.com/stiutin/pixi-neon-district.git
+cd pixi-neon-district
+npm ci
+npm start
 ```
 
-> Open the game through Vite, not by double-clicking `index.html`: the sources use Vite's module pipeline and asset serving.
+Other scripts:
 
-| Script              | What it does                                         |
-| ------------------- | ---------------------------------------------------- |
-| `npm run dev`       | Dev server with hot reload                           |
-| `npm run build`     | Type-check and build to `dist/`                      |
-| `npm run preview`   | Serve the production build locally                   |
-| `npm test`          | Run unit tests (Vitest)                              |
-| `npm run lint`      | ESLint with `typescript-eslint` strict type-checked  |
-| `npm run typecheck` | `tsc -b` in strict mode                              |
-| `npm run format`    | Format everything with Prettier                      |
-| `npm run check`     | Format check + lint + typecheck + tests (same as CI) |
-
-## Architecture
-
-```mermaid
-flowchart TD
-    main[main.ts] --> Game
-    Game --> Viewport
-    Game --> GameLoop
-    Game --> SceneManager
-    GameLoop -- "update(dt)" --> SceneManager
-    SceneManager --> LoadingScene
-    SceneManager --> MainScene
-
-    MainScene --> World
-    MainScene --> Systems
-    MainScene --> UI
-
-    subgraph World
-        Layers["ground · y-sorted entities · effects"]
-        CollisionGrid[("SpatialGrid<br/>colliders")]
-        InteractionGrid[("SpatialGrid<br/>interactables")]
-    end
-
-    subgraph Systems
-        InputManager
-        CollisionSystem
-        InteractionSystem
-        Camera
-        ParticlePool
-        AudioSystem
-        SaveGame
-    end
-
-    subgraph UI [Screen-space UI]
-        HUD
-        InteractionPrompt
-        MessageBanner
-        Overlay
-        TouchControls
-    end
-
-    CollisionSystem --> CollisionGrid
-    InteractionSystem --> InteractionGrid
-    TouchControls -. actions .-> InputManager
+```bash
+npm run build          # type check and production build into dist/
+npm run serve          # serve the production build
+npm test               # unit tests
+npm run e2e            # build, then the Playwright tests (run `npm run e2e:install` once)
+npm run screenshots    # regenerate the README screenshots
+npm run lint           # ESLint and Stylelint
+npm run typecheck      # TypeScript
+npm run check          # formatting, lint, types and unit tests, as in CI
 ```
 
-```text
-src/
-├── app/          composition root, Pixi setup, responsive viewport
-├── core/         game loop, scene base class, scene manager
-├── scenes/       loading scene, main gameplay scene (state machine)
-├── world/        world layers, camera, level data
-├── entities/     player, NPCs, buildings, trees, collectibles
-├── spatial/      uniform spatial grid (broad phase)
-├── collision/    collider contract, collision system
-├── interaction/  interactable contract, nearest-target search
-├── input/        action bindings, keyboard + touch input manager
-├── effects/      pooled particles
-├── audio/        procedural Web Audio sound effects
-├── save/         validated, failure-tolerant localStorage persistence
-├── ui/           HUD, prompt, banner, overlay, touch controls, theme
-├── math/         AABB, points, clamp
-└── utils/        small shared helpers
-```
+Working on the project with an AI assistant? [`CLAUDE.md`](CLAUDE.md) has the full context.
 
-## Engineering highlights
+## Deployment
 
-**Spatial grid broad phase.** Colliders and interactables live in a uniform grid (`SpatialGrid`). Collision and "what can I interact with" queries only visit nearby cells, not the whole scene. Cell keys are packed into a single integer, and queries can reuse an output array, so the per-frame hot path doesn't allocate.
+Pushing to `master` runs formatting, lint, type checks and unit tests, then builds the site and runs the Playwright tests against that build. Only when they pass is the same build published to GitHub Pages. Vite uses a relative `base`, so the files work under `/pixi-neon-district/` without any configuration.
 
-**Axis-separated collision.** Movement is resolved on X and then on Y. When the player is blocked on one axis, they slide along walls instead of sticking to them. Diagonal input is normalized, so diagonal movement isn't faster.
+## Roadmap
 
-**Object pooling.** Particle bursts reuse `Particle` instances from a pool, and all particles share one `GraphicsContext`. Size and color change through `scale` and `tint`, so spawning a particle never rebuilds GPU geometry.
-
-**Frame-rate independence.** Delta time is clamped (`maxDeltaTime`) so a long frame can't push entities through walls. Camera smoothing and particle drag are exponential in `dt`, so the game feels the same at 30, 60 or 144 Hz.
-
-**Crisp rendering at any size.** The game is designed at 1280×720. `Viewport` letterboxes it into the window by raising the renderer _resolution_ (fit scale × `devicePixelRatio`, capped) instead of CSS-stretching the canvas. Game and UI code keep using design coordinates, and text stays sharp on 4K and Retina screens.
-
-**Y-sorted entities.** The world has three layers: static ground, a `sortableChildren` entity layer ordered by each object's "feet", and an effects layer. The player correctly walks in front of or behind NPCs, trees and buildings.
-
-**Input as actions.** `InputManager` maps keys and touch buttons to actions (`moveUp`, `interact`, `pause`…). It tracks multiple sources per action, provides edge-triggered `wasPressed`, and exposes `onPress` callbacks for browser APIs that need a real user gesture (Fullscreen, Web Audio). Browser shortcuts such as `Ctrl+R` are left alone.
-
-**Typed interactions.** `interact()` returns a discriminated union (`collected` | `dialogue`), so the scene reacts with an exhaustive `switch` instead of `instanceof` checks.
-
-**Explicit game state.** The main scene is a small state machine (`playing` / `paused` / `completed`). The game auto-pauses when the tab is hidden, and progress resets in place without a page reload.
-
-**Robust persistence.** `SaveGame` validates untrusted JSON field by field and never throws, even when `localStorage` is unavailable (private mode, quota, sandboxed iframe). Storage is injected, so the class is unit-tested.
-
-**Data-driven level.** The map layout lives in `world/level.ts` as plain data, separate from rendering and gameplay code.
-
-**Zero audio assets.** Sound effects are synthesized with the Web Audio API and scheduled on the audio clock.
-
-## Quality
-
-- TypeScript `strict`, plus `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride` and `verbatimModuleSyntax`.
-- ESLint (`typescript-eslint` strict type-checked) and Prettier.
-- Vitest unit tests for the engine-agnostic parts: AABB math, spatial grid, interaction search, save validation and helpers.
-- GitHub Actions runs the full check and build on every push and pull request, and deploys `main` to GitHub Pages.
-
-## Ideas for next steps
-
-- Fixed-timestep simulation with render interpolation
-- Level loading from Tiled / JSON, and more districts
-- Sprite animations (walk cycles) via spritesheets
-- `prefers-reduced-motion` support and a settings menu
-- Playwright smoke test in CI
+- [ ] A fixed simulation step with interpolated rendering
+- [ ] Walking animations from a spritesheet
+- [ ] Levels loaded from Tiled maps, and more than one district
+- [ ] A settings menu with key remapping and reduced motion
+- [ ] Gamepad support through the same input layer
+- [ ] A benchmark page comparing the spatial grid with a brute-force search
 
 ## License
 
-[MIT](LICENSE)
+Released under the [MIT License](LICENSE).
+
+## Author
+
+**Serge Tiutin** - [github.com/stiutin](https://github.com/stiutin)

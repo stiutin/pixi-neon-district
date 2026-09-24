@@ -1,30 +1,30 @@
-import { Scene } from "../core/Scene";
-import type { AssetManager } from "../assets/AssetManager";
-import { AudioSystem } from "../audio/AudioSystem";
-import { CollisionSystem } from "../collision/CollisionSystem";
-import { GAME_CONFIG } from "../config/game.config";
-import { ParticlePool } from "../effects/ParticlePool";
-import { Player } from "../entities/Player";
-import { InputManager } from "../input/InputManager";
-import type { InteractionResult } from "../interaction/Interactable";
-import { InteractionSystem } from "../interaction/InteractionSystem";
-import { clamp } from "../math/clamp";
-import { SaveGame } from "../save/SaveGame";
-import { HUD } from "../ui/HUD";
-import { InteractionPrompt } from "../ui/InteractionPrompt";
-import { MessageBanner } from "../ui/MessageBanner";
-import { Overlay } from "../ui/Overlay";
-import { TouchControls } from "../ui/TouchControls";
-import { Camera } from "../world/Camera";
-import { World } from "../world/World";
+import type {AssetManager} from '../assets/AssetManager';
+import {AudioSystem} from '../audio/AudioSystem';
+import {CollisionSystem} from '../collision/CollisionSystem';
+import {GAME_CONFIG} from '../config/game.config';
+import {Scene} from '../core/Scene';
+import {ParticlePool} from '../effects/ParticlePool';
+import {Player} from '../entities/Player';
+import {InputManager} from '../input/InputManager';
+import type {InteractionResult} from '../interaction/Interactable';
+import {InteractionSystem} from '../interaction/InteractionSystem';
+import {clamp} from '../math/clamp';
+import {SaveGame} from '../save/SaveGame';
+import {HUD} from '../ui/HUD';
+import {InteractionPrompt} from '../ui/InteractionPrompt';
+import {MessageBanner} from '../ui/MessageBanner';
+import {Overlay} from '../ui/Overlay';
+import {TouchControls} from '../ui/TouchControls';
+import {Camera} from '../world/Camera';
+import {World} from '../world/World';
 
-type GameState = "playing" | "paused" | "completed";
+type GameState = 'playing' | 'paused' | 'completed';
 
 const PAUSE_HELP = [
-  "WASD / arrows — move   ·   E — interact",
-  "M — sound   ·   F — fullscreen",
-  "R — reset progress   ·   Esc / P — resume",
-].join("\n");
+  'WASD / arrows - move   ·   E - interact',
+  'M - sound   ·   F - fullscreen',
+  'R - reset progress   ·   Esc / P - resume',
+].join('\n');
 
 export class MainScene extends Scene {
   private readonly save = new SaveGame(GAME_CONFIG.saveKey);
@@ -41,8 +41,8 @@ export class MainScene extends Scene {
   private readonly banner = new MessageBanner();
   private readonly overlay = new Overlay();
   private readonly touch = new TouchControls(this.input);
-  private readonly unsubscribers: Array<() => void> = [];
-  private state: GameState = "playing";
+  private readonly unsubscribers: (() => void)[] = [];
+  private state: GameState = 'playing';
   private fpsFrames = 0;
   private fpsTime = 0;
 
@@ -54,24 +54,16 @@ export class MainScene extends Scene {
     this.audio = new AudioSystem(saveData.soundEnabled);
     this.world = new World(assets);
     this.world.restoreCollected(new Set(saveData.collectedIds));
-    this.player = new Player(assets.getTexture("player"));
+    this.player = new Player(assets.getTexture('player'));
     this.world.entityLayer.addChild(this.player);
-    this.camera = new Camera(
-      this.world,
-      GAME_CONFIG,
-      GAME_CONFIG.world,
-      GAME_CONFIG.camera.smoothing,
-    );
+    this.camera = new Camera(this.world, GAME_CONFIG, GAME_CONFIG.world, GAME_CONFIG.camera.smoothing);
     this.particles = new ParticlePool(this.world.effectsLayer);
     this.collision = new CollisionSystem(this.world.collisionGrid);
-    this.interaction = new InteractionSystem(
-      this.world.interactionGrid,
-      GAME_CONFIG.interaction.radius,
-    );
+    this.interaction = new InteractionSystem(this.world.interactionGrid, GAME_CONFIG.interaction.radius);
     this.hud.position.set(16, 16);
     this.prompt.position.set(16, 102);
 
-    const isTouch = window.matchMedia("(pointer: coarse)").matches;
+    const isTouch = window.matchMedia('(pointer: coarse)').matches;
 
     this.touch.setEnabled(isTouch);
     this.hud.setShowKeyHints(!isTouch);
@@ -82,19 +74,16 @@ export class MainScene extends Scene {
     this.refreshHud();
 
     this.unsubscribers.push(
-      this.input.onPress("toggleFullscreen", () => {
+      this.input.onPress('toggleFullscreen', () => {
         void toggleFullscreen();
-      }),
+      })
     );
-    document.addEventListener("visibilitychange", this.handleVisibilityChange);
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
 
     if (this.world.isComplete()) {
-      this.setState("completed");
+      this.setState('completed');
     } else {
-      this.banner.show(
-        "Recover the missing data shards. Talk to locals for hints.",
-        "Neon District",
-      );
+      this.banner.show('Recover the missing data shards. Talk to locals for hints.', 'Neon District');
     }
   }
 
@@ -102,7 +91,7 @@ export class MainScene extends Scene {
     this.updateFps(deltaTime);
     this.handleGlobalActions();
 
-    if (this.state === "playing") {
+    if (this.state === 'playing') {
       this.movePlayer(deltaTime);
       this.updateInteraction();
       this.world.update(deltaTime);
@@ -115,7 +104,7 @@ export class MainScene extends Scene {
   }
 
   public override dispose(): void {
-    document.removeEventListener("visibilitychange", this.handleVisibilityChange);
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
     for (const unsubscribe of this.unsubscribers) unsubscribe();
     this.input.destroy();
     this.audio.destroy();
@@ -128,41 +117,38 @@ export class MainScene extends Scene {
     this.prompt.hide();
 
     switch (next) {
-      case "playing":
+      case 'playing':
         this.overlay.hide();
         break;
-      case "paused":
-        this.overlay.show("PAUSED", PAUSE_HELP);
+      case 'paused':
+        this.overlay.show('PAUSED', PAUSE_HELP);
         break;
-      case "completed":
-        this.overlay.show(
-          "DISTRICT COMPLETE",
-          "All data shards recovered.\nEsc — keep exploring   ·   R — start over",
-        );
+      case 'completed':
+        this.overlay.show('DISTRICT COMPLETE', 'All data shards recovered.\nEsc - keep exploring   ·   R - start over');
         break;
     }
   }
 
   private handleGlobalActions(): void {
-    if (this.input.wasPressed("pause")) {
-      this.setState(this.state === "playing" ? "paused" : "playing");
+    if (this.input.wasPressed('pause')) {
+      this.setState(this.state === 'playing' ? 'paused' : 'playing');
     }
 
-    if (this.input.wasPressed("toggleSound")) {
+    if (this.input.wasPressed('toggleSound')) {
       this.audio.setEnabled(!this.audio.isEnabled());
       this.audio.playConfirm();
       this.refreshHud();
       this.persist();
     }
 
-    if (this.input.wasPressed("reset") && this.state !== "playing") {
+    if (this.input.wasPressed('reset') && this.state !== 'playing') {
       this.resetProgress();
     }
   }
 
   private movePlayer(deltaTime: number): void {
-    let dirX = this.input.axis("moveLeft", "moveRight");
-    let dirY = this.input.axis("moveUp", "moveDown");
+    let dirX = this.input.axis('moveLeft', 'moveRight');
+    let dirY = this.input.axis('moveUp', 'moveDown');
 
     if (dirX === 0 && dirY === 0) return;
 
@@ -207,21 +193,21 @@ export class MainScene extends Scene {
 
     this.prompt.show(target.getInteractionLabel());
 
-    if (this.input.wasPressed("interact")) {
+    if (this.input.wasPressed('interact')) {
       this.handleInteraction(target.interact());
     }
   }
 
   private handleInteraction(result: InteractionResult): void {
     switch (result.kind) {
-      case "collected": {
+      case 'collected': {
         this.particles.burst(result.position.x, result.position.y, 18);
         this.refreshHud();
         this.persist();
 
         if (this.world.isComplete()) {
           this.audio.playComplete();
-          this.setState("completed");
+          this.setState('completed');
         } else {
           this.audio.playCollect();
           const left = this.world.getTotalCollectibles() - this.world.getCollectedCount();
@@ -230,7 +216,7 @@ export class MainScene extends Scene {
 
         break;
       }
-      case "dialogue":
+      case 'dialogue':
         this.audio.playTalk();
         this.banner.show(result.text, result.speaker);
         break;
@@ -242,8 +228,8 @@ export class MainScene extends Scene {
     this.persist();
     this.respawnPlayer();
     this.refreshHud();
-    this.setState("playing");
-    this.banner.show("Progress reset. The shards are back out there.");
+    this.setState('playing');
+    this.banner.show('Progress reset. The shards are back out there.');
   }
 
   private respawnPlayer(): void {
@@ -276,7 +262,7 @@ export class MainScene extends Scene {
   }
 
   private readonly handleVisibilityChange = (): void => {
-    if (document.hidden && this.state === "playing") this.setState("paused");
+    if (document.hidden && this.state === 'playing') this.setState('paused');
   };
 }
 
@@ -288,6 +274,6 @@ async function toggleFullscreen(): Promise<void> {
       await document.documentElement.requestFullscreen();
     }
   } catch {
-    // Fullscreen is unsupported (e.g. iOS Safari) or was denied — not critical.
+    // Fullscreen is unsupported (e.g. iOS Safari) or was denied - not critical.
   }
 }

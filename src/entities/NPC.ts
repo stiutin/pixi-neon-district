@@ -1,8 +1,9 @@
-import { Sprite, type Texture } from "pixi.js";
-import { type AABB, aabbFromCenter } from "../math/AABB";
-import type { Point } from "../math/Point";
-import type { Collider } from "../collision/Collider";
-import type { Interactable, InteractionResult } from "../interaction/Interactable";
+import {Sprite, type Texture} from 'pixi.js';
+
+import type {Collider} from '../collision/Collider';
+import type {Interactable, InteractionResult} from '../interaction/Interactable';
+import {type AABB, aabbFromCenter} from '../math/AABB';
+import type {Point} from '../math/Point';
 
 export interface NPCData {
   readonly name: string;
@@ -20,7 +21,7 @@ export class NPC extends Sprite implements Collider, Interactable {
 
   constructor(
     texture: Texture,
-    private readonly data: NPCData,
+    private readonly data: NPCData
   ) {
     super(texture);
     this.anchor.set(0.5);
@@ -43,9 +44,9 @@ export class NPC extends Sprite implements Collider, Interactable {
   }
 
   public interact(): InteractionResult {
-    const text = this.data.lines[this.lineIndex % this.data.lines.length] ?? "";
+    const text = this.data.lines[this.lineIndex % this.data.lines.length] ?? '';
     this.lineIndex++;
-    return { kind: "dialogue", speaker: this.data.name, text };
+    return {kind: 'dialogue', speaker: this.data.name, text};
   }
 
   public getInteractionLabel(): string {

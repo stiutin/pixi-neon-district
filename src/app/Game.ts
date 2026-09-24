@@ -1,11 +1,12 @@
-import type { Application } from "pixi.js";
-import { AssetManager } from "../assets/AssetManager";
-import { GAME_CONFIG } from "../config/game.config";
-import { GameLoop } from "../core/GameLoop";
-import { SceneManager } from "../core/SceneManager";
-import { LoadingScene } from "../scenes/LoadingScene";
-import { MainScene } from "../scenes/MainScene";
-import { Viewport } from "./Viewport";
+import type {Application} from 'pixi.js';
+
+import {AssetManager} from '../assets/AssetManager';
+import {GAME_CONFIG} from '../config/game.config';
+import {GameLoop} from '../core/GameLoop';
+import {SceneManager} from '../core/SceneManager';
+import {LoadingScene} from '../scenes/LoadingScene';
+import {MainScene} from '../scenes/MainScene';
+import {Viewport} from './Viewport';
 
 export class Game {
   private readonly assets = new AssetManager();

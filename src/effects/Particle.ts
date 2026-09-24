@@ -1,8 +1,8 @@
-import { Graphics, GraphicsContext } from "pixi.js";
+import {Graphics, GraphicsContext} from 'pixi.js';
 
 const BASE_RADIUS = 4;
 const MIN_RADIUS = 2;
-const LIFETIME = { min: 0.4, max: 0.75 } as const;
+const LIFETIME = {min: 0.4, max: 0.75} as const;
 const MAX_INITIAL_SPEED = 220;
 const DRAG = 0.9;
 const COLORS = [0x4de3ff, 0xff4dd8] as const;

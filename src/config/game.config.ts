@@ -11,12 +11,12 @@ export const GAME_CONFIG = {
   spatialCellSize: 256,
   player: {
     speed: 300,
-    spawn: { x: 1500, y: 1000 },
-    size: { width: 48, height: 64 },
+    spawn: {x: 1500, y: 1000},
+    size: {width: 48, height: 64},
     hitboxHalfSize: 22,
   },
-  camera: { smoothing: 8 },
-  interaction: { radius: 88 },
-  ui: { messageDuration: 3.5, fpsSampleInterval: 0.5 },
-  saveKey: "neon-district-save-v1",
+  camera: {smoothing: 8},
+  interaction: {radius: 88},
+  ui: {messageDuration: 3.5, fpsSampleInterval: 0.5},
+  saveKey: 'neon-district-save-v1',
 } as const;

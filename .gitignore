@@ -1,19 +1,33 @@
-# Dependencies & build output
-node_modules
-dist
-dist-ssr
-coverage
-*.local
-*.tsbuildinfo
+# Dependencies and build output
+/node_modules
+/dist
+/out-tsc
+/tmp
+
+# Tool caches and reports
+/.angular
+/.lighthouseci
+/lighthouse-report
+/coverage
+/playwright-report
+/test-results
+/blob-report
+/playwright/.cache
 
 # Logs
-logs
-*.log
 npm-debug.log*
+yarn-error.log*
 
-# Editors / OS
+# Editors and OS
+.idea/
 .vscode/*
 !.vscode/extensions.json
-.idea
+!.vscode/settings.json
+*.sublime-workspace
 .DS_Store
-*.sw?
+Thumbs.db
+
+# Local environment
+.env
+.env.*
+!.env.example

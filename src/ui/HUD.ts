@@ -1,32 +1,33 @@
-import { Container, Graphics, Text } from "pixi.js";
-import { THEME } from "./theme";
+import {Container, Graphics, Text} from 'pixi.js';
 
-const { colors, font } = THEME;
+import {THEME} from './theme';
+
+const {colors, font} = THEME;
 
 export class HUD extends Container {
   private readonly panel = new Graphics()
     .roundRect(0, 0, 245, 74, 14)
-    .fill({ color: colors.panel, alpha: 0.82 })
-    .stroke({ color: colors.border, width: 1 });
+    .fill({color: colors.panel, alpha: 0.82})
+    .stroke({color: colors.border, width: 1});
 
   private readonly scoreText = new Text({
-    text: "",
+    text: '',
     style: {
       fill: colors.text,
       fontFamily: font,
       fontSize: 17,
-      fontWeight: "700",
+      fontWeight: '700',
     },
   });
 
   private readonly fpsText = new Text({
-    text: "FPS --",
-    style: { fill: colors.textMuted, fontFamily: font, fontSize: 13 },
+    text: 'FPS --',
+    style: {fill: colors.textMuted, fontFamily: font, fontSize: 13},
   });
 
   private readonly soundText = new Text({
-    text: "",
-    style: { fill: colors.textMuted, fontFamily: font, fontSize: 13 },
+    text: '',
+    style: {fill: colors.textMuted, fontFamily: font, fontSize: 13},
   });
 
   private showKeyHints = true;
@@ -61,7 +62,7 @@ export class HUD extends Container {
   }
 
   private renderSound(): void {
-    const state = this.soundEnabled ? "♪ ON" : "♪ OFF";
+    const state = this.soundEnabled ? '♪ ON' : '♪ OFF';
     this.soundText.text = this.showKeyHints ? `${state}  [M]` : state;
   }
 }

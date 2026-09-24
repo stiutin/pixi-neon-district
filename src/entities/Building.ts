@@ -1,6 +1,7 @@
-import { Sprite, type Texture } from "pixi.js";
-import type { AABB } from "../math/AABB";
-import type { Collider } from "../collision/Collider";
+import {Sprite, type Texture} from 'pixi.js';
+
+import type {Collider} from '../collision/Collider';
+import type {AABB} from '../math/AABB';
 
 export interface BuildingData {
   readonly x: number;

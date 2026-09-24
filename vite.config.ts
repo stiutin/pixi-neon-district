@@ -1,8 +1,12 @@
-import { defineConfig } from "vite";
+import {defineConfig} from 'vite';
 
 export default defineConfig({
-  base: "./",
+  base: './',
   build: {
-    target: "es2022",
+    target: 'es2022',
+  },
+  preview: {
+    port: 4173,
+    strictPort: true,
   },
 });

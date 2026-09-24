@@ -1,4 +1,4 @@
-import { DEFAULT_KEY_BINDINGS, type InputAction } from "./InputAction";
+import {DEFAULT_KEY_BINDINGS, type InputAction} from './InputAction';
 
 type ActionListener = () => void;
 
@@ -9,11 +9,11 @@ export class InputManager {
 
   constructor(
     private readonly target: Window = window,
-    private readonly bindings: Readonly<Record<string, InputAction>> = DEFAULT_KEY_BINDINGS,
+    private readonly bindings: Readonly<Record<string, InputAction>> = DEFAULT_KEY_BINDINGS
   ) {
-    target.addEventListener("keydown", this.handleKeyDown);
-    target.addEventListener("keyup", this.handleKeyUp);
-    target.addEventListener("blur", this.releaseAll);
+    target.addEventListener('keydown', this.handleKeyDown);
+    target.addEventListener('keyup', this.handleKeyUp);
+    target.addEventListener('blur', this.releaseAll);
   }
 
   public isDown(action: InputAction): boolean {
@@ -28,7 +28,7 @@ export class InputManager {
     return Number(this.isDown(positive)) - Number(this.isDown(negative));
   }
 
-  public press(action: InputAction, source = "virtual"): void {
+  public press(action: InputAction, source = 'virtual'): void {
     let sources = this.heldSources.get(action);
 
     if (!sources) {
@@ -46,7 +46,7 @@ export class InputManager {
     sources.add(source);
   }
 
-  public release(action: InputAction, source = "virtual"): void {
+  public release(action: InputAction, source = 'virtual'): void {
     this.heldSources.get(action)?.delete(source);
   }
 
@@ -68,9 +68,9 @@ export class InputManager {
   }
 
   public destroy(): void {
-    this.target.removeEventListener("keydown", this.handleKeyDown);
-    this.target.removeEventListener("keyup", this.handleKeyUp);
-    this.target.removeEventListener("blur", this.releaseAll);
+    this.target.removeEventListener('keydown', this.handleKeyDown);
+    this.target.removeEventListener('keyup', this.handleKeyUp);
+    this.target.removeEventListener('blur', this.releaseAll);
     this.releaseAll();
     this.listeners.clear();
   }

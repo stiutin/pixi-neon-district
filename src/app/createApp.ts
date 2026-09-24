@@ -1,5 +1,6 @@
-import { Application } from "pixi.js";
-import { GAME_CONFIG } from "../config/game.config";
+import {Application} from 'pixi.js';
+
+import {GAME_CONFIG} from '../config/game.config';
 
 export async function createApp(): Promise<Application> {
   const app = new Application();
@@ -10,10 +11,10 @@ export async function createApp(): Promise<Application> {
     backgroundColor: GAME_CONFIG.backgroundColor,
     antialias: true,
     autoDensity: false,
-    preference: "webgl",
+    preference: 'webgl',
   });
 
-  app.canvas.setAttribute("role", "img");
-  app.canvas.setAttribute("aria-label", "Neon District — top-down city exploration game");
+  app.canvas.setAttribute('role', 'img');
+  app.canvas.setAttribute('aria-label', 'Neon District - top-down city exploration game');
   return app;
 }

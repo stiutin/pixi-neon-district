@@ -1,7 +1,7 @@
-import { aabbFromCenter } from "../math/AABB";
-import { type Point, distanceSquared } from "../math/Point";
-import type { SpatialGrid } from "../spatial/SpatialGrid";
-import type { Interactable } from "./Interactable";
+import {aabbFromCenter} from '../math/AABB';
+import {distanceSquared, type Point} from '../math/Point';
+import type {SpatialGrid} from '../spatial/SpatialGrid';
+import type {Interactable} from './Interactable';
 
 export class InteractionSystem {
   private readonly radiusSquared: number;
@@ -9,7 +9,7 @@ export class InteractionSystem {
 
   constructor(
     private readonly grid: SpatialGrid<Interactable>,
-    private readonly radius: number,
+    private readonly radius: number
   ) {
     this.radiusSquared = radius * radius;
   }

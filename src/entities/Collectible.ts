@@ -1,7 +1,8 @@
-import { Sprite, type Texture } from "pixi.js";
-import { type AABB, aabbFromCenter } from "../math/AABB";
-import type { Point } from "../math/Point";
-import type { Interactable, InteractionResult } from "../interaction/Interactable";
+import {Sprite, type Texture} from 'pixi.js';
+
+import type {Interactable, InteractionResult} from '../interaction/Interactable';
+import {type AABB, aabbFromCenter} from '../math/AABB';
+import type {Point} from '../math/Point';
 
 export interface CollectibleData {
   readonly id: string;
@@ -28,7 +29,7 @@ export class Collectible extends Sprite implements Interactable {
     this.baseScale = SIZE / Math.max(texture.width, texture.height, 1);
     this.scale.set(this.baseScale);
 
-    this.home = { x: data.x, y: data.y };
+    this.home = {x: data.x, y: data.y};
     this.position.set(data.x, data.y);
     this.zIndex = data.y + SIZE / 2;
     this.hitbox = aabbFromCenter(data.x, data.y, SIZE / 2);
@@ -57,11 +58,11 @@ export class Collectible extends Sprite implements Interactable {
 
   public interact(): InteractionResult {
     this.setCollected(true);
-    return { kind: "collected", id: this.id, position: this.home };
+    return {kind: 'collected', id: this.id, position: this.home};
   }
 
   public getInteractionLabel(): string {
-    return "Collect shard";
+    return 'Collect shard';
   }
 
   public getPosition(): Point {

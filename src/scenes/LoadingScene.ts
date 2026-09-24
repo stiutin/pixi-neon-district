@@ -1,10 +1,11 @@
-import { Graphics, Text } from "pixi.js";
-import { Scene } from "../core/Scene";
-import type { AssetManager } from "../assets/AssetManager";
-import { GAME_CONFIG } from "../config/game.config";
-import { THEME } from "../ui/theme";
+import {Graphics, Text} from 'pixi.js';
 
-const BAR = { width: 500, height: 12, radius: 6 } as const;
+import type {AssetManager} from '../assets/AssetManager';
+import {GAME_CONFIG} from '../config/game.config';
+import {Scene} from '../core/Scene';
+import {THEME} from '../ui/theme';
+
+const BAR = {width: 500, height: 12, radius: 6} as const;
 
 export class LoadingScene extends Scene {
   private readonly progressFill = new Graphics();
@@ -19,12 +20,12 @@ export class LoadingScene extends Scene {
     const centerX = GAME_CONFIG.width / 2;
     const centerY = GAME_CONFIG.height / 2;
     const title = new Text({
-      text: "NEON DISTRICT",
+      text: 'NEON DISTRICT',
       style: {
         fill: THEME.colors.text,
         fontFamily: THEME.font,
         fontSize: 46,
-        fontWeight: "700",
+        fontWeight: '700',
         letterSpacing: 5,
       },
     });
@@ -32,7 +33,7 @@ export class LoadingScene extends Scene {
     title.position.set(centerX, centerY - 75);
 
     const subtitle = new Text({
-      text: "Initializing city systems…",
+      text: 'Initializing city systems…',
       style: {
         fill: THEME.colors.textMuted,
         fontFamily: THEME.font,
@@ -42,12 +43,10 @@ export class LoadingScene extends Scene {
     subtitle.anchor.set(0.5);
     subtitle.position.set(centerX, centerY - 25);
 
-    const track = new Graphics()
-      .roundRect(this.barX, this.barY, BAR.width, BAR.height, BAR.radius)
-      .fill(0x1a2434);
+    const track = new Graphics().roundRect(this.barX, this.barY, BAR.width, BAR.height, BAR.radius).fill(0x1a2434);
 
     this.status = new Text({
-      text: "0%",
+      text: '0%',
       style: {
         fill: THEME.colors.accent,
         fontFamily: THEME.font,
@@ -67,9 +66,9 @@ export class LoadingScene extends Scene {
         if (!this.disposed) onLoaded();
       })
       .catch((error: unknown) => {
-        console.error("[LoadingScene] Failed to load assets:", error);
+        console.error('[LoadingScene] Failed to load assets:', error);
         if (this.disposed) return;
-        this.status.text = "Failed to load assets. Please reload the page.";
+        this.status.text = 'Failed to load assets. Please reload the page.';
         this.status.style.fill = THEME.colors.danger;
       });
   }
@@ -88,10 +87,7 @@ export class LoadingScene extends Scene {
 
     const width = Math.max(BAR.height, BAR.width * progress);
 
-    this.progressFill
-      .clear()
-      .roundRect(this.barX, this.barY, width, BAR.height, BAR.radius)
-      .fill(THEME.colors.accent);
+    this.progressFill.clear().roundRect(this.barX, this.barY, width, BAR.height, BAR.radius).fill(THEME.colors.accent);
     this.status.text = `${Math.round(progress * 100)}%`;
   }
 }

@@ -1,6 +1,7 @@
-import { Sprite, type Texture } from "pixi.js";
-import { type AABB, aabbFromCenter } from "../math/AABB";
-import type { Collider } from "../collision/Collider";
+import {Sprite, type Texture} from 'pixi.js';
+
+import type {Collider} from '../collision/Collider';
+import {type AABB, aabbFromCenter} from '../math/AABB';
 
 const TREE_SIZE = 58;
 const TRUNK_HALF_SIZE = 9;
