@@ -90,22 +90,30 @@ scripts/           README screenshots
 6. **`exactOptionalPropertyTypes` and `noUncheckedIndexedAccess` stay on;** handle `undefined` explicitly.
 7. The save key is part of the smoke tests; bump the version suffix when the save format changes.
 
-## 7. Testing guide
+## 7. Conventions (project-specific)
+
+- **Units:** positions and sizes are in design coordinates (1280×720), time in seconds.
+- **Numbers:** every tunable value lives in `GAME_CONFIG`; nothing in the game code is a bare magic number.
+- **Results:** interactions and other outcomes are discriminated unions, handled with an exhaustive `switch`.
+- **Ownership:** a scene destroys everything it created when it is replaced; pooled objects go back to their pool, never to the garbage collector.
+- **Tests:** engine-independent logic has unit tests beside it; anything that needs Pixi is covered end to end.
+
+## 8. Testing guide
 
 - **Unit** (`src/**/*.test.ts`, Vitest, node environment): AABB, SpatialGrid (including negative coordinates, update and reuse), InteractionSystem, SaveGame (with an in-memory and a throwing storage), `swapRemove`. Test pure modules directly; Pixi-dependent classes are covered by the smoke tests.
 - **End-to-end** (`e2e/smoke.spec.ts`): the game boots without errors and the canvas fits the viewport; keyboard input produces no errors; toggling sound is saved. Input is ignored during the loading scene, so tests poll (`expect.poll`) instead of sleeping.
 
-## 8. Recipes
+## 9. Recipes
 
 - **Add an NPC or shard:** edit `world/level.ts` (data only).
 - **Add an action:** extend `InputAction` and `DEFAULT_KEY_BINDINGS`; add a touch button in `TouchControls` if it makes sense on phones; handle it in `MainScene.handleGlobalActions()` or the gameplay code.
 - **Add an entity type:** implement `Collider` and/or `Interactable`, insert it into the world's grids, and set `zIndex` from its feet position.
 
-## 9. CI/CD
+## 10. CI/CD
 
 The jobs are _Lint and types_, _Unit tests_, _Build_ (uploads `dist/`), _End-to-end_ (against that build), and _Deploy to GitHub Pages_, which publishes the same artifact from `master`. One-time setup is listed at the top of `.github/workflows/ci.yml`.
 
-## 10. Troubleshooting
+## 11. Troubleshooting
 
 | Symptom                                                         | Cause / fix                                                                                                                  |
 | --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
@@ -114,14 +122,14 @@ The jobs are _Lint and types_, _Unit tests_, _Build_ (uploads `dist/`), _End-to-
 | FPS reads ~10 in headless screenshots                           | software WebGL; real browsers run at display refresh rate                                                                    |
 | Deploy rejected: "branch not allowed to deploy to github-pages" | Settings → Environments → github-pages → allow `master`                                                                      |
 
-## 11. Known limitations
+## 12. Known limitations
 
 - A variable time step (clamped), not a fixed one with interpolation; see the roadmap in the README.
 - There is one level, defined in code as data.
 
 ## House style (identical in every repository of this portfolio)
 
-These five repositories are written as one body of work: [cosmos-stories](https://github.com/stiutin/cosmos-stories), [larder](https://github.com/stiutin/larder), [pixi-neon-district](https://github.com/stiutin/pixi-neon-district), [threejs-solar-system](https://github.com/stiutin/threejs-solar-system) and [threejs-icosphere](https://github.com/stiutin/threejs-icosphere). Keep them alike. When a convention changes, change it everywhere.
+These six repositories are written as one body of work: [cosmos-stories](https://github.com/stiutin/cosmos-stories), [larder](https://github.com/stiutin/larder), [livery](https://github.com/stiutin/livery), [pixi-neon-district](https://github.com/stiutin/pixi-neon-district), [threejs-solar-system](https://github.com/stiutin/threejs-solar-system) and [threejs-icosphere](https://github.com/stiutin/threejs-icosphere). Keep them alike. When a convention changes, change it everywhere.
 
 **Shared files.** `LICENSE` (MIT, Serge Tiutin), `.editorconfig`, `.gitattributes`, `.nvmrc` (`24`), `.prettierrc`, `.prettierignore`, `.gitignore`, `.vscode/`, `.github/dependabot.yml` and the issue and PR templates are identical across the repositories, apart from a clearly marked `# Project` block at the end of the ignore files.
 
@@ -130,11 +138,11 @@ These five repositories are written as one body of work: [cosmos-stories](https:
 **Linting.** `eslint.config.mjs` with `defineConfig`, and two shared blocks:
 
 - `HOUSE_RULES`: sorted imports and exports (`simple-import-sort`), no unused imports, `curly: all`, arrow bodies only where needed, no `console` except `warn` and `error`;
-- `HOUSE_TS_RULES` in TypeScript projects: explicit `public`/`protected`/`private` on every class member (never on constructors), `T[]` rather than `Array<T>`, and unused variables allowed only as `_`.
+- `HOUSE_TS_RULES` in TypeScript projects: explicit `public`/`protected`/`private` on every class member (never on constructors), explicit return types on every exported function, no `any`, `T[]` rather than `Array<T>`, and unused variables allowed only with a leading `_`.
 
-`eslint-config-prettier` comes last. Each project adds its own strictness on top: `typescript-eslint` strict-type-checked in cosmos-stories and pixi-neon-district, Larder's own rule set (magic numbers, naming, member ordering, RxJS) in larder. Styles are linted by Stylelint with properties in alphabetical order; `-webkit-backdrop-filter` and `-webkit-user-select` stay, for Safari.
+`eslint-config-prettier` comes last. Each project adds its own strictness on top: `typescript-eslint` strict-type-checked in cosmos-stories, livery and pixi-neon-district (livery adds the React hooks and Fast Refresh rules), Larder's own rule set (magic numbers, naming, member ordering, RxJS) in larder. Styles are linted by Stylelint with properties in alphabetical order; `-webkit-backdrop-filter` and `-webkit-user-select` stay, for Safari.
 
-**`package.json`.** The field order is name, version, description, license, author, repository, homepage, keywords, private, type, engines, scripts, dependencies, devDependencies. Dependencies are sorted, and `engines.node` is `>=22.22.3`. Scripts use the same names everywhere:
+**`package.json`.** The field order is name, version, description, license, author, repository, homepage, keywords, private, type, engines, workspaces (in monorepos), scripts, dependencies, devDependencies. Dependencies are sorted, and `engines.node` is `>=22.22.3`. Scripts use the same names everywhere:
 
 | Script                                       | Meaning                                                                   |
 | -------------------------------------------- | ------------------------------------------------------------------------- |
@@ -155,8 +163,23 @@ These five repositories are written as one body of work: [cosmos-stories](https:
 
 **Tests.** Every project has Playwright tests against its production build, on a desktop and a Pixel 7 viewport, served the way GitHub Pages serves it. `CHROMIUM_PATH` points Playwright and the screenshot scripts at a specific browser binary (useful in sandboxes). Projects with logic worth isolating also have Vitest unit tests.
 
-**CI.** `.github/workflows/ci.yml` with the same job names: _Lint and types_, _Unit tests_, _Build_, _End-to-end (Playwright)_, _Lighthouse_ (Angular projects), _Deploy to GitHub Pages_. It runs on `ubuntu-24.04`, reads the Node version from `.nvmrc`, and uses the same action versions everywhere. Deploys go from `master` only, and only after the gates pass. The header of the workflow lists the one-time repository settings; the `github-pages` environment must allow `master`.
+**CI.** `.github/workflows/ci.yml` with the same job names: _Lint and types_, _Unit tests_, _Build_, _End-to-end (Playwright)_, _Lighthouse_ (Angular projects and livery), _Visual regression_ (livery, in the Playwright container), _Deploy to GitHub Pages_. It runs on `ubuntu-24.04`, reads the Node version from `.nvmrc`, and uses the same action versions everywhere. Deploys go from `master` only, and only after the gates pass. The header of the workflow lists the one-time repository settings; the `github-pages` environment must allow `master`.
 
-**Documentation.** The README follows one outline: title, one line, a paragraph, **Open the live demo**, screenshots, then _Features_, _Tech stack_, _How it works_, _Testing_ (a table), _Project structure_, _Running locally_, _Deployment_, _Roadmap_, _License_, _Author_. The voice is calm and specific, in British English, with no badges and no marketing adjectives. Explain _why_ in prose. There is no CHANGELOG and no ADR folder: decisions live in _How it works_ and in this file. `.github/social-preview.png` (1280×640) is the repository's social preview, and every project uses the same design.
+**Documentation.** The README follows one outline: title, one line, a paragraph, **Open the live demo**, screenshots, then _Features_, _Tech stack_, _How it works_, _Testing_ (a table), _Project structure_, _Running locally_, _Deployment_, _Roadmap_, _Credits_ (only where the project uses other people's content), _License_, _Author_. The roadmap lists only what comes next; what is done is described in the sections above it. The voice is calm and specific, in British English, with no badges and no marketing adjectives. Explain _why_ in prose. `CLAUDE.md` follows one outline too: 1. What this is, 2. Toolchain, 3. Commands, 4. Repository map, 5. Architecture, 6. Invariants - do not break, 7. Conventions (project-specific), 8. Testing guide, 9. Recipes, 10. CI/CD, 11. Troubleshooting, 12. Known limitations, then this section, word for word. Both describe the project as it is, not how it got there. There is no CHANGELOG and no ADR folder: decisions live in _How it works_ and in this file. `.github/social-preview.png` (1280×640) is the repository's social preview, and every project uses the same design.
 
-**Scripts and tooling.** Node scripts are `.mjs`. TypeScript scripts run through Node's type stripping, and are used only when they share code with the app (cosmos-stories). Scripts have a header comment with usage examples.
+**Scripts and tooling.** Node scripts are `.mjs`. TypeScript scripts run through Node's type stripping, and are used only when they share code with the app (cosmos-stories, livery). Scripts have a header comment with usage examples.
+
+### Code style
+
+The rules every change follows, in every language of the portfolio. The list grows: add a rule here, in every repository at once.
+
+1. **Comments are meaningful.** A comment says why the code is the way it is, or what a reader could not know from the code: a browser quirk, a spec, a trade-off. When the code already says what it does, it needs no comment.
+2. **Names explain themselves.** A variable, a function or a type is named after what it is for (`unpaidInvoices`, `formatMoney`, `TenantRouteData`), so its role is clear without a comment. No abbreviations beyond the common ones (`id`, `url`, `i18n`).
+3. **Return early.** Handle the invalid, empty and error cases first and leave the function; the main path then reads without nesting. No `else` after a `return`.
+4. **One function, one job.** A function does one thing, and its name says which. When a name needs "and", or a block needs a comment to say what it does, it becomes a function of its own.
+
+**TypeScript.**
+
+- Strict mode is on everywhere, with the extra flags listed above.
+- Never use `any`. Use `unknown` for a value whose type is not known yet, and narrow it with a check or a type guard. `no-explicit-any` enforces it.
+- Every exported function states its return type, and so does every API route handler, loader and action. `explicit-module-boundary-types` enforces it; an inferred type is fine for local functions.
